@@ -1,12 +1,7 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("ERROR: INVALID NUMBER OF ARGS");
-        exit(1);
-    }
-
+int main(char *argv[]) {
     int bound = atoi(argv[1]);
     int isPrime;
     for (int i = 2; i <= bound; i++) {
