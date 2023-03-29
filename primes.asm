@@ -85,10 +85,35 @@ divEnd:
 
 ; ~~ PRINTS A NUMBER TO THE OUTPUT ~~
 _printNum:
+    mov     ebx, 0
+    mov     eax, [lower]
+printLoop:
+    xor     edx, edx
+    mov     edi, 10
+    div     edi
+    mov     esi, edx
+    add     edx, '0'
+    mov     byte[buffer+ebx], dl
+    inc     ebx
+    cmp     eax, 0
+    jne     printLoop
+    mov     edi, ebx
+    dec     edi
+    mov     ebx, 0
+reverseLoop:
+    cmp     ebx, edi
+    jg      output
+    mov     al, byte[buffer+ebx]
+    xchg    al, byte[buffer+edi]
+    mov     byte[buffer+ebx], al
+    inc     ebx
+    dec     edi
+    jmp     reverseLoop
+output:
     mov     eax, 1
     mov     edi, 1
-    mov     esi, lower
-    mov     edx, 2
+    mov     esi, buffer
+    mov     edx, 8
     syscall
     mov     eax, 1
     mov     edi, 1
@@ -96,28 +121,3 @@ _printNum:
     mov     edx, 2
     syscall
     ret
-
-
-; ~~ CONVERTS NUMBER TO A STRING ~~
-_getString:
-    push    rbp
-    mov     rbp, rsp
-    push    rbx
-    push    rsi
-    mov     rbx, 10         ; Set divisor to 10 for decimal conversion
-    mov     rsi, rdi        ; Move the address of the buffer to RSI
-    mov     rdx, 0          ; Clear RDX register for division
-convertLoop:
-    xor     rdx, rdx        ; Clear RDX register for division
-    div     rbx             ; Divide RAX by RBX
-    add     rdx, '0'        ; Add ASCII '0' to remainder to get ASCII digit
-    mov     byte[rsi], dl   ; Store the digit in the buffer
-    inc     rsi             ; Move the buffer pointer
-    test    rax, rax        ; Check if RAX is zero
-    jnz     convertLoop     ; Jump if not zero
-    mov     byte[rsi], 0    ; Store null terminator
-    pop     rsi             ; Restore RSI register
-    pop     rbx             ; Restore RBX register
-    mov     rsp, rbp        ; Restore the stack pointer
-    pop     rbp             ; Restore the base pointer
-    ret                     ; Return from function
